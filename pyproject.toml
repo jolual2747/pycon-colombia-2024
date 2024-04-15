@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "pycon-colombia-2024"
+version = "0.1.0"
+description = ""
+authors = ["Jose Alcocer <jolual2747@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+torch = "^2.2.2"
+qdrant-client = "^1.8.2"
+datasets = "^2.18.0"
+pandas = "^2.2.2"
+panns-inference = "^0.1.1"
+kaggle = "^1.6.12"
+ipykernel = "^6.29.4"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
