@@ -9,6 +9,7 @@ __pycache__/
 # Data
 /data
 *.zip
+qdrant_storage
 
 # Distribution / packaging
 .Python
