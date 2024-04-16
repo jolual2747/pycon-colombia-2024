@@ -38,7 +38,7 @@ def load_sample_from_genre(genre: str, n_samples: int) -> Dataset:
     Returns:
         Dataset: Dataset built from random songs in a genre folder.
     """
-    data_path = f"..data/unstructured/ludwig-music-dataset-moods-and-subgenres/mp3/mp3/{genre}"
+    data_path = f"../data/unstructured/ludwig-music-dataset-moods-and-subgenres/mp3/mp3/{genre}"
 
     return load_dataset(
         cache_dir="../data/unstructured/audiofolder", 
