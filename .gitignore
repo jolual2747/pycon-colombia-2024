@@ -7,9 +7,10 @@ __pycache__/
 *.so
 
 # Data
-/data
+data/unstructured/ludwig-music-dataset-moods-and-subgenres
+data/unstructured/audiofolder
 *.zip
-qdrant_storage
+/qdrant_storage
 
 # Distribution / packaging
 .Python

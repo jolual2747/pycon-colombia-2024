@@ -9,7 +9,7 @@ def create_kaggle_credentials() -> None:
     """Creates kaggle.json file with username and key.
     """
     os.system("mkdir -p ~/.kaggle && touch ~/.kaggle/kaggle.json")
-    api_token = {"username":os.getenv("kaggle_username"),"key":os.getenv("kaggle_password")}
+    api_token = {"username": os.getenv("kaggle_username"),"key": os.getenv("kaggle_password")}
     
     with open('/teamspace/studios/this_studio/.kaggle/kaggle.json', 'w') as file:
         json.dump(api_token, file)

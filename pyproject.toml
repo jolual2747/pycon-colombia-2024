@@ -14,6 +14,8 @@ pandas = "^2.2.2"
 panns-inference = "^0.1.1"
 kaggle = "^1.6.12"
 ipykernel = "^6.29.4"
+opencv-python = "^4.9.0.80"
+facenet-pytorch = "^2.5.3"
 
 
 [build-system]
