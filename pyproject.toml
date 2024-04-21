@@ -19,6 +19,7 @@ facenet-pytorch = "^2.5.3"
 mtcnn = "^0.1.1"
 tensorflow = "^2.16.1"
 scikit-image = "^0.23.2"
+transformers = "^4.40.0"
 
 
 [build-system]
