@@ -3,7 +3,8 @@ import os
 import numpy as np
 from skimage.transform import resize
 from torch.utils.data import Dataset
-from typing import Tuple
+from typing import Tuple, List
+import matplotlib.pyplot as plt
 
 class FaceDataset(Dataset):
     """Face Dataset with local images to use in DataLoader."""
@@ -60,3 +61,32 @@ class FaceDataset(Dataset):
             np.ndarray: Array with shape (512, 512) and dtype np.uint8
         """
         return (resize(image, output_shape = (512, 512)) * 255).astype(np.uint8)
+    
+def plot_images_horizontal(image_list: List[np.ndarray], titles: List[str] = None) -> None:
+    """Plot images from a list of arrays.
+
+    Args:
+        image_list (List[np.ndarray]): List of images as arrays.
+        titles (List[str], optional): Titles to map to every image. Defaults to None.
+    """
+    num_images = len(image_list)
+
+    if num_images != len(titles):
+        raise(ValueError(f"Number of images is different from number of titles"))
+    
+    # Create fig and axes
+    fig, axes = plt.subplots(1, num_images, figsize=(num_images * 4, 4))
+    
+    # Hide axis
+    for ax in axes:
+        ax.axis('off')
+    
+    # Plot images
+    for i, (image, ax) in enumerate(zip(image_list, axes)):
+        ax.imshow(image)  
+        if titles is not None:
+            ax.set_title(f"\n{titles[i]}")    
+
+    fig.suptitle(f'Plotting {num_images} images', fontsize=20)
+    plt.tight_layout()
+    plt.show()
