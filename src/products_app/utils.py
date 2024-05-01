@@ -7,6 +7,7 @@ from typing import List
 import numpy as np
 import pandas as pd
 from ast import literal_eval
+import re
 
 def get_client(host: str, port: int) -> QdrantClient:
     """Get a QdrantClient to manage vector databases. 
@@ -43,32 +44,32 @@ def get_products_data() -> pd.DataFrame:
     df["image"] = df["image"].apply(literal_eval)
     return df
 
-def plot_images_horizontal(image_list: List[np.ndarray], titles: List[str] = None) -> None:
-    """Plot images from a list of arrays.
+
+def plot_images_grid(image_list: List[np.ndarray], titles: List[str] = None) -> None:
+    """Plot images from a list of arrays in a grid layout.
 
     Args:
         image_list (List[np.ndarray]): List of images as arrays.
         titles (List[str], optional): Titles to map to every image. Defaults to None.
     """
     num_images = len(image_list)
+    num_columns = 4
+    num_rows = (num_images + num_columns - 1) // num_columns  # Calcular el número de filas necesarias
 
-    if num_images != len(titles):
-        raise ValueError(f"Number of images is different from number of titles")
-    
-    # Create fig and axes
-    fig, axes = plt.subplots(1, num_images, figsize=(num_images * 4, 4))
-    
-    # Hide axis
-    for ax in axes:
-        ax.axis('off')
-    
-    # Plot images
-    for i, (image, ax) in enumerate(zip(image_list, axes)):
-        ax.imshow(image)  
-        if titles is not None:
-            ax.set_title(f"\n{titles[i]}")    
+    fig, axes = plt.subplots(num_rows, num_columns, figsize=(16, 4 * num_rows))  # Crear la cuadrícula de subgráficos
 
-    fig.suptitle(f'Similar {num_images} products', fontsize=20)
+    # Ocultar los ejes y los subgráficos vacíos
+    for i in range(num_rows):
+        for j in range(num_columns):
+            index = i * num_columns + j
+            if index < num_images:
+                axes[i, j].imshow(image_list[index])
+                axes[i, j].axis('off')
+                if titles is not None and index < len(titles):
+                    title = result = re.sub(r'(?:\s+\S+){3}\s+', lambda m: m.group()[:-1] + '\n', titles[index], count=1)
+                    axes[i, j].set_title(title)
+            else:
+                axes[i, j].axis('off')  # Ocultar los ejes para los subgráficos vacíos
+
     plt.tight_layout()
-
     st.pyplot(fig)
