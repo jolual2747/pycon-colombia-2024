@@ -37,31 +37,30 @@ def main() -> None:
         with torch.no_grad():
             outputs = model(**inputs)
             embedding = outputs.pooler_output
-        st.write(len(embedding.detach().cpu().numpy().tolist()[0]))
-        st.write(embedding.mean())
-        st.write(f"Pixels mean {np.array(st.session_state.uploaded_img).mean()}")
-        st.write(f'pixel values mean: {inputs["pixel_values"].mean()}')
+        # st.write(len(embedding.detach().cpu().numpy().tolist()[0]))
+        # st.write(embedding.mean())
+        # st.write(f"Pixels mean {np.array(st.session_state.uploaded_img).mean()}")
+        # st.write(f'pixel values mean: {inputs["pixel_values"].mean()}')
     
         results = client.search(
             collection_name=collection,
             query_vector=embedding.detach().cpu().numpy().tolist()[0],
-            score_threshold = 0.001,
+            score_threshold = 0.01,
             limit=10
         )
-        res = [result.id for result in results]
-        descriptions = [result.payload["title"] for result in results]
-        similar_images = []
 
-        st.write(res)
+        if len(results) > 0:
+            res = [result.id for result in results]
+            descriptions = [result.payload["title"] for result in results]
+            similar_images = []
 
-        for row in ds_pandas.iloc[res,]["image"]:
-            similar_images.append(np.array(PIL.Image.open(BytesIO(row["bytes"]))))
-
-        st.write(similar_images)
-        st.write(results)
-
+            for row in ds_pandas.iloc[res,]["image"]:
+                similar_images.append(np.array(PIL.Image.open(BytesIO(row["bytes"]))))
+            
+            plot_images_horizontal(similar_images, titles=descriptions)
         
-        plot_images_horizontal(similar_images, titles=descriptions)
+        else:
+            st.error("Not found similar products. Try with another!")
             
         
 

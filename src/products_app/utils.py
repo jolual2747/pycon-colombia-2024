@@ -29,7 +29,7 @@ def load_model() -> Tuple[ViTImageProcessor, ViTModel]:
     """
     model_id = 'jolual2747/vit-clothes-classification'
     processor = ViTImageProcessor.from_pretrained(model_id)
-    model = ViTModel.from_pretrained(model_id)
+    model = ViTModel.from_pretrained("./assets/embedding_model")
     return processor, model
 
 @st.cache_data

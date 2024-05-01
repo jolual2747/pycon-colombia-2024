@@ -11,6 +11,10 @@ data/unstructured/ludwig-music-dataset-moods-and-subgenres
 data/unstructured/audiofolder
 *.zip
 /qdrant_storage
+data/structured/products.csv
+
+# models
+assets/embedding_model
 
 # Distribution / packaging
 .Python
