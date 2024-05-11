@@ -5,3 +5,6 @@ CURRENT_DIR := $(shell pwd)
 
 build_products_app:
 	poetry run streamlit run src/products_app/app.py
+
+build_songs_app:
+	poetry run streamlit run src/songs_app/app.py
