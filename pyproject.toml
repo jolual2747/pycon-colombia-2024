@@ -23,6 +23,7 @@ transformers = "^4.40.0"
 streamlit = "^1.33.0"
 pytube = "^15.0.0"
 pydub = "^0.25.1"
+bs4 = "^0.0.2"
 
 
 [build-system]
