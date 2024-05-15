@@ -1,26 +1,26 @@
 import os
-import PIL.Image
-import numpy as np
 import torch
 import PIL
+import PIL.Image
+import requests
+import numpy as np
+import streamlit as st
 from io import BytesIO
 from typing import Any, Tuple, Optional
 from pytube import YouTube
-import requests
 from bs4 import BeautifulSoup
 from pydub import AudioSegment
 from qdrant_client import QdrantClient
 from panns_inference import AudioTagging
-import streamlit as st
 
 tmp_folder = os.path.join(os.getcwd(), "src", "songs_app", "tmp")
 
-def extract_audio_from_youtube_video(url_video: str, file_name: str):
+def extract_audio_from_youtube_video(url_video: str, file_name: str) -> None:
     """Download 
 
     Args:
         url_video (str): URL of Youtube Video.
-        file_name (str): File name to store in tmp folder. Must end like .mp3
+        file_name (str): File name to store in tmp folder. Must end like .mp3.
     """
     # Download video
     mp4_file_name = os.path.join(tmp_folder, "video.mp4")

@@ -24,6 +24,14 @@ streamlit = "^1.33.0"
 pytube = "^15.0.0"
 pydub = "^0.25.1"
 bs4 = "^0.0.2"
+openai = "^1.14.3"
+langchain = "^0.1.13"
+unstructured = "0.7.12"
+pypdf = "^4.1.0"
+tiktoken = "^0.6.0"
+langchain-openai = "0.1.1"
+chromadb = "0.4.17"
+langchainhub = "^0.1.15"
 
 
 [build-system]
