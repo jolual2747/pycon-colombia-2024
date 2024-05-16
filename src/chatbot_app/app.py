@@ -1,8 +1,11 @@
 import streamlit as st
+import asyncio
+from langchain.callbacks.streaming_aiter import AsyncIteratorCallbackHandler
 from utils import (
     clean_prod_workspace, 
     create_vector_database_from_pdf, 
-    create_chatbot
+    create_chatbot,
+    AsyncCallbackHandler
 )
 
 def start_over_with_new_document() -> None:
@@ -16,6 +19,18 @@ def start_over_with_new_document() -> None:
     del st.session_state.messages
     # display message to user
     st.info('Please upload new documents to continue after clearing or updating the current ones.')
+
+async def run_call(agent, query: str, stream_it: AsyncCallbackHandler):
+    # assign callback handler
+    agent.agent.llm_chain.llm.callbacks = [stream_it]
+    # now query
+    await agent.acall(inputs={"input": query})
+
+async def create_gen(agent, query: str, stream_it: AsyncCallbackHandler):
+    task = asyncio.create_task(run_call(agent, query, stream_it))
+    async for token in stream_it.aiter():
+        yield token
+    await task
 
 def main() -> None:
     """
@@ -56,34 +71,17 @@ def main() -> None:
         if prompt:
             st.chat_message("user").markdown(prompt)
             st.session_state.messages.append({"role": "user", "content": prompt})
-            answer = st.session_state.bot({"question":prompt})["answer"]
+            stream_it = AsyncCallbackHandler()
+            answer = create_gen(st.session_state.bot, prompt, stream_it)
             with st.chat_message("assistant"):
-                st.markdown(answer)
+                # st.markdown(answer)
+                st.write_stream(st.session_state.bot.stream({"input": prompt}))
             st.session_state.messages.append({"role": "assistant", "content": answer})
 
         if st.session_state.text_input or st.session_state.vs:
             st.button('Start again from new context', on_click=start_over_with_new_document, key='new_question_new_context')
 
-        # Display chat messages from history on app rerun
-        # for message in st.session_state.messages:
-        #     with st.chat_message(message["role"]):
-        #         st.markdown(message["content"])
 
-    #     q = st.text_input('Ask one or more questions about the content of the uploaded data:', key='text_input')
-    #     if q:
-    #         vector_store = st.session_state.vs
-    #         answer = st.session_state.bot({"question":q})["answer"]
-    #         print(answer)
-    #         st.write(answer)
-
-    #     if st.session_state.text_input:
-    #         st.button('New question for new context', on_click=start_over_with_new_document, key='new_question_new_context')
-    # else:
-    #     st.info('Please upload one or more files to continue.')
-
-        # if prompt := st.chat_input("What is up?"):
-        #     with st.chat_message("user"):
-        #         st.markdown(prompt)
 
 if __name__ == "__main__":
     main()

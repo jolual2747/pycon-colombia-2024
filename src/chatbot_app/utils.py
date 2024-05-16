@@ -1,4 +1,5 @@
 import os
+import sys
 import pandas as pd
 import glob
 from typing import Dict, Any
@@ -7,15 +8,21 @@ from chromadb.api.models.Collection import Collection
 from langchain_openai.embeddings import OpenAIEmbeddings
 from langchain_openai.chat_models import ChatOpenAI
 from langchain.vectorstores.chroma import Chroma
+from langchain.schema import LLMResult
 from langchain.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_core.vectorstores import VectorStoreRetriever
-from langchain.chains.qa_with_sources.retrieval import RetrievalQAWithSourcesChain
+from langchain.chains.retrieval_qa.base import RetrievalQA
 from langchain.chains import ConversationalRetrievalChain
 from langchain.chains.conversational_retrieval.base import BaseConversationalRetrievalChain
-from langchain.prompts import SystemMessagePromptTemplate
-from langchain.memory import ConversationBufferMemory
-from _templates import combine_docs_template_customer_service
+from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+from langchain.callbacks.streaming_stdout_final_only import (
+    FinalStreamingStdOutCallbackHandler,
+)
+from langchain.callbacks.streaming_aiter import AsyncIteratorCallbackHandler
+from langchain.agents import Tool, initialize_agent
+from langchain.memory import ConversationBufferWindowMemory
+from _templates import template_customer_service
 
 def clean_prod_workspace(path: str) -> None:
     """Removes all files in a directory.
@@ -78,25 +85,70 @@ def create_chatbot(
     Returns:
         BaseConversationalRetrievalChain: _description_
     """
-    memory = ConversationBufferMemory(memory_key="chat_history", output_key="answer", return_messages=True)
+    
     llm = ChatOpenAI(
         model_name = "gpt-3.5-turbo",
         temperature = 0.0,
         streaming=True
     )
-    condense_question_llm = ChatOpenAI(
-        model_name = "gpt-3.5-turbo",
-        temperature = 0.0
+    conversational_memory = ConversationBufferWindowMemory(
+        memory_key='chat_history',
+        k=5,
+        return_messages=True
     )
-    qa = ConversationalRetrievalChain.from_llm(
+    # Retrieval qa chain
+    qa = RetrievalQA.from_chain_type(
+        llm=llm,
+        chain_type="stuff",
+        retriever=retriever
+    )
+    tools = [
+        Tool(
+            name='Knowledge Base',
+            func=qa.invoke,
+            description=(
+                'use this tool when answering general knowledge queries to get '
+                'more information about the topic'
+            )
+        )
+    ]
+
+    agent = initialize_agent(
+        agent='chat-conversational-react-description',
+        tools=tools,
         llm=llm,
         verbose=True,
-        memory=memory,
-        return_generated_question=False,
-        retriever=retriever,
-        condense_question_llm = condense_question_llm,
-        #condense_question_prompt=PromptTemplate.from_template(custom_template),
-        get_chat_history=lambda h : h
+        max_iterations=3,
+        early_stopping_method='generate',
+        memory = conversational_memory,
+        get_chat_history=lambda h : h,
+        return_intermediate_steps=False
     )
-    qa.combine_docs_chain.llm_chain.prompt.messages[0] = SystemMessagePromptTemplate.from_template(combine_docs_template_customer_service.replace("{company}", company_name))
-    return qa
+    agent.agent.llm_chain.prompt.messages[0].prompt.template = template_customer_service.replace("{company}", company_name)
+    return agent
+
+class AsyncCallbackHandler(AsyncIteratorCallbackHandler):
+    content: str = ""
+    final_answer: bool = False
+    
+    def __init__(self) -> None:
+        super().__init__()
+
+    async def on_llm_new_token(self, token: str, **kwargs: Any) -> None:
+        self.content += token
+        # if we passed the final answer, we put tokens in queue
+        if self.final_answer:
+            if '"action_input": "' in self.content:
+                if token not in ['"', "}"]:
+                    self.queue.put_nowait(token)
+        elif "Final Answer" in self.content:
+            self.final_answer = True
+            self.content = ""
+    
+    async def on_llm_end(self, response: LLMResult, **kwargs: Any) -> None:
+        if self.final_answer:
+            self.content = ""
+            self.final_answer = False
+            self.done.set()
+        else:
+            self.content = ""
