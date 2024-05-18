@@ -2,12 +2,13 @@ import asyncio
 from typing import Dict, Any
 from langchain_openai.chat_models import ChatOpenAI
 from langchain_core.vectorstores import VectorStoreRetriever
+from langchain.tools.retriever import create_retriever_tool
 from langchain.chains.retrieval_qa.base import RetrievalQA
 from langchain.agents import AgentExecutor
 from langchain.agents import Tool, initialize_agent
 from langchain.memory import ConversationBufferWindowMemory
-from chatbot_app.services._templates import template_customer_service
-from chatbot_app.services.utils import AsyncCallbackHandler
+from app.services._templates import template_customer_service
+from app.services.utils import AsyncCallbackHandler
 
 class ChatBot:
     def __init__(self, retriever: VectorStoreRetriever, company_name: str) -> None:
@@ -27,41 +28,24 @@ class ChatBot:
         llm = ChatOpenAI(
             model_name = "gpt-3.5-turbo",
             temperature = 0.0,
-            streaming=True,
-            callbacks=[AsyncCallbackHandler()]
+            streaming=True
         )
         conversational_memory = ConversationBufferWindowMemory(
             memory_key='chat_history',
             k=5,
             return_messages=True
         )
-        llm2 = ChatOpenAI(
-            model_name = "gpt-3.5-turbo",
-            temperature = 0.0,
-            streaming=True,
-            callbacks=[AsyncCallbackHandler()]
+        tool = create_retriever_tool(
+            self.retriever,
+            "knowledge_base",
+            'use this tool when answering general knowledge queries to get more information about the topic'
         )
-        # Retrieval qa chain
-        qa = RetrievalQA.from_chain_type(
-            llm=llm,
-            chain_type="stuff",
-            retriever=self.retriever
-        )
-        tools = [
-            Tool(
-                name='Knowledge Base',
-                func=qa.invoke,
-                description=(
-                    'use this tool when answering general knowledge queries to get '
-                    'more information about the topic'
-                )
-            )
-        ]
+        tools = [tool]
 
         agent = initialize_agent(
             agent='chat-conversational-react-description',
             tools=tools,
-            llm=llm2,
+            llm=llm,
             verbose=True,
             max_iterations=3,
             early_stopping_method='generate',

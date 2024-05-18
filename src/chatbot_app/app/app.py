@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from chatbot_app.routers.chatbot import chatbot_router
-from chatbot_app.services.utils import create_vector_database_from_pdf
+from app.routers.chatbot import chatbot_router
+from app.services.utils import create_vector_database_from_pdf
 
 app = FastAPI(
     title="Chatbot Streaming",
