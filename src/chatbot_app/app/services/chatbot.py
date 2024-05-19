@@ -1,16 +1,17 @@
 import asyncio
-from typing import Dict, Any
+from typing import AsyncGenerator
 from langchain_openai.chat_models import ChatOpenAI
 from langchain_core.vectorstores import VectorStoreRetriever
 from langchain.tools.retriever import create_retriever_tool
 from langchain.chains.retrieval_qa.base import RetrievalQA
 from langchain.agents import AgentExecutor
-from langchain.agents import Tool, initialize_agent
+from langchain.agents import initialize_agent
 from langchain.memory import ConversationBufferWindowMemory
 from app.services._templates import template_customer_service
 from app.services.utils import AsyncCallbackHandler
 
 class ChatBot:
+    """Class ChatBot as a LangChain Agent."""
     def __init__(self, retriever: VectorStoreRetriever, company_name: str) -> None:
         self.retriever = retriever
         self.company_name = company_name
@@ -19,10 +20,10 @@ class ChatBot:
         """Initialize a ConversationalRetrievalChain as a Customer Service Chatbot.
 
         Args:
-            retriever (VectorStoreRetriever): _description_
+            retriever (VectorStoreRetriever): Vector Store as retriever,
 
         Returns:
-            AgentExecutor: _description_
+            AgentExecutor: Initialized Agent with tools.
         """
         
         llm = ChatOpenAI(
@@ -56,26 +57,13 @@ class ChatBot:
         agent.agent.llm_chain.prompt.messages[0].prompt.template = template_customer_service.replace("{company}", self.company_name)
         self.agent = agent
 
-    # async def run_call(self, query: str, stream_it: AsyncCallbackHandler):
-    #     # assign callback handler
-    #     self.agent.agent.llm_chain.llm.callbacks = [stream_it]
-    #     # now query
-    #     await self.agent.acall(inputs={"input": query})
-
-    # async def create_gen(self, query: str, stream_it: AsyncCallbackHandler):
-    #     task = asyncio.create_task(self.run_call(self.agent, query, stream_it))
-    #     async for token in stream_it.aiter():
-    #         yield token
-    #     await task
-
-
-async def run_call(agent: AgentExecutor, query: str, stream_it: AsyncCallbackHandler):
+async def run_call(agent: AgentExecutor, query: str, stream_it: AsyncCallbackHandler) -> None:
     # assign callback handler
     agent.agent.llm_chain.llm.callbacks = [stream_it]
     # now query
     await agent.acall(inputs={"input": query})
 
-async def create_gen(agent: AgentExecutor, query: str, stream_it: AsyncCallbackHandler):
+async def create_gen(agent: AgentExecutor, query: str, stream_it: AsyncCallbackHandler) -> AsyncGenerator:
     task = asyncio.create_task(run_call(agent, query, stream_it))
     async for token in stream_it.aiter():
         yield token

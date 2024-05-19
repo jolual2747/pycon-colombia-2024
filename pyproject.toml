@@ -32,6 +32,10 @@ tiktoken = "^0.6.0"
 langchain-openai = "0.1.1"
 chromadb = "0.4.17"
 langchainhub = "^0.1.15"
+fastapi = "^0.111.0"
+pydantic = "^2.7.1"
+uvicorn = "^0.29.0"
+starlette = "^0.37.2"
 
 
 [build-system]

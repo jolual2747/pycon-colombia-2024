@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  api:
+    build: 
+      context: ./src/chatbot_app
+      dockerfile: Dockerfile
+    image: chatbot-api:latest
+    ports:
+      - "8003:8000"
+    env_file:
+      - .env
+
+  front:
+    depends_on: 
+      - api
+    restart: always
+    build:
+       context: ./src/chatbot_app
+       dockerfile: Dockerfile_front
+    image: chatbot-front:latest
+    ports:
+      - "8005:8003"
