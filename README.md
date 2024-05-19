@@ -23,3 +23,9 @@ This implementation is based on RAG (Retrieval Augmented Generation) architechtu
 This implementation is a version on Reverse Image Search. Using ViT (Vision Transformer) models, Embeddings and Vector Databases to can search product into a web fashion store based on a image of a product as input and retrieve the most similar products.
 
 <img src="assets/gifs/products_app.gif" alt="Products app" width="768" height="432">
+
+
+### 3. Music Recommender Web App: Find songs similar to your favorite songs 🎵
+This implementation is based on a Music recommender. Using PANNs (Pretrained Audio Neural Networks) models, Embeddings and Vector Databases to can search and recommend songs similar to your favorites songs. You enter a YouTube URL of a song and it fetch recommendations.
+
+<img src="assets/gifs/songs_app.gif" alt="Songs app" width="768" height="432">

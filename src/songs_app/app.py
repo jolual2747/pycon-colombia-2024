@@ -15,12 +15,33 @@ from utils import (
 
 collection = "music_collection3"
 
+hide_menu_style = """
+    <style>
+    #MainMenu {visibility: hidden; }
+    footer {visibility: hidden; }
+    .stDeployButton {
+            visibility: hidden;
+        }
+    </style>
+"""
+
+def start_over_with_new_search():
+    """
+    Deletes objects from Streamlit's session.
+    """
+    # Delete uploaded images
+    del st.session_state.url
+    # display message to user
+    st.info('Please upload a new url to continue!')
+
+
 def main() -> None:
     """
     Main of the Streamlit app. 
     """
     # Title and resources
     st.set_page_config(layout="wide")
+    st.markdown(hide_menu_style, unsafe_allow_html=True)
     st.title("Find Cool Songs. 🎵🎶😎")
     st.write("Enter a URL YouTube video and find songs similar to your favorite ones")
     model = load_model()
@@ -32,6 +53,7 @@ def main() -> None:
         url = st.text_input("Copy and paste an URL from YouTube")
         if url and st.button("Search"):
             st.session_state.url = url
+            st.button('Clear results', on_click=start_over_with_new_search, key='new_search')
             uploaded_video, thumbnail = get_youtube_video_info(st.session_state.url)
             st.subheader(f"Uploaded video ✅:\n{uploaded_video}")
             st.image(thumbnail)

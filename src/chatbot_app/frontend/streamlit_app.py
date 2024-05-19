@@ -5,11 +5,6 @@ import base64
 
 company_name = "PyCon Colombia 2024"
 
-def draw_something_on_top_of_page_navigation():
-    st.sidebar.markdown(
-        "My Logo (sidebar) should be on top of the Navigation within the sidebar"
-    )
-
 def start_over_with_new_document() -> None:
     """
     Deletes objects from Streamlit's session.
