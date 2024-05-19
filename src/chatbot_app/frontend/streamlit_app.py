@@ -22,6 +22,12 @@ def start_over_with_new_document() -> None:
     # display message to user
     st.info('Please upload new documents to continue after clearing or updating the current ones.')
 
+def response_generator(company_name: str):
+    response = f"I am an AI chatbot from {company_name} ready to help you to answer any questions!"
+    for word in response.split():
+        yield word + " "
+        time.sleep(0.005)
+
 def main() -> None:
     """
     Main of the Streamlit app. 
@@ -37,6 +43,7 @@ def main() -> None:
     if "start" in st.session_state:
         if "messages" not in st.session_state:
             st.session_state.messages = []
+            
             welcome_message = f"I am an AI chatbot from {company_name} ready to help you to answer any questions!"
             st.session_state.messages.append({"role": "assistant", "content": welcome_message})
         for message in st.session_state.messages:
