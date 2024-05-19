@@ -1,5 +1,5 @@
 # PyCon Colombia 2024
-<img src="assets/imgs/pycon-cover.png" alt="Cover" width="672" height="114">
+<img src="assets/imgs/pycon-cover.png" alt="Cover" width="1056" height="146">
 
 Repo for my PyCon Colombia 2024 talk called Embeddings is all you need: Artificial Intelligence for text, audio and images.
 See all the info about the event, [clic here](https://2024.pycon.co/en) 
