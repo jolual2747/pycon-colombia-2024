@@ -76,7 +76,7 @@ def generate_datasets(dataset_name: str, n_samples: int) -> DatasetDict:
     """Generate datasets for train, test and validation.
 
     Args:
-        dataset_name (str): Name in HuggingFace
+        dataset_name (str): Dataset name in HuggingFace.
         n_samples (int): Number of samples to generate.
 
     Returns:
@@ -108,13 +108,13 @@ def generate_datasets(dataset_name: str, n_samples: int) -> DatasetDict:
     return train_test_valid_dataset
 
 def collate_fn(batch: List[dict]) -> Dict[str, torch.tensor]:
-    """  Collate and return pixel values from batch dicts as Tensors.
+    """Collate and return pixel values from batch dicts as Tensors.
 
     Args:
-        batch (List[dict]): _description_
+        batch (List[dict]): Batch to process
 
     Returns:
-        Dict[str, torch.tensor]: _description_
+        Dict[str, torch.tensor]: Processed batch with pixel values and labels
     """  
 
     return {
@@ -123,6 +123,7 @@ def collate_fn(batch: List[dict]) -> Dict[str, torch.tensor]:
     }
 
 def compute_metrics(prediction):
+    """Compute classification metrics."""
     metric = load_metric("accuracy")
     return metric.compute(predictions = np.argmax(prediction.predictions, axis =1), references = prediction.label_ids)
 

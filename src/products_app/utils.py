@@ -1,5 +1,5 @@
 from qdrant_client import QdrantClient
-from transformers import ViTImageProcessor, ViTModel
+from transformers import ViTImageProcessor, ViTForImageClassification
 from typing import Tuple
 import streamlit as st
 import matplotlib.pyplot as plt
@@ -21,16 +21,25 @@ def get_client(host: str, port: int) -> QdrantClient:
     """
     return QdrantClient(host=host, port=port)
 
+class ViTWithoutClassifier(ViTForImageClassification):
+    def __init__(self, config):
+        super().__init__(config)
+        del self.classifier  # Drop classifier layer
+    
+    def forward(self, pixel_values, labels=None):
+        outputs = self.vit(pixel_values=pixel_values)
+        return outputs.last_hidden_state[:, 0, :]  # Return only first last_hidden_state (CLS token)
+
 @st.cache_resource
-def load_model() -> Tuple[ViTImageProcessor, ViTModel]:
+def load_model() -> Tuple[ViTImageProcessor, ViTWithoutClassifier]:
     """Load ViT model and Image processor.
 
     Returns:
-        Tuple[ViTImageProcessor, ViTModel]: ViT model and Image processor
+        Tuple[ViTImageProcessor, ViTWithoutClassifier]: ViT model and Image processor.
     """
     model_id = 'jolual2747/vit-clothes-classification'
     processor = ViTImageProcessor.from_pretrained(model_id)
-    model = ViTModel.from_pretrained("./assets/embedding_model")
+    model = ViTWithoutClassifier.from_pretrained("./assets/embedding_model")
     return processor, model
 
 @st.cache_data
@@ -40,7 +49,7 @@ def get_products_data() -> pd.DataFrame:
     Returns:
         pd.DataFrame: Products with metadata and images.
     """
-    df = pd.read_csv("./data/structured/products.csv")
+    df = pd.read_csv("./data/structured/products_embeddings.csv")
     df["image"] = df["image"].apply(literal_eval)
     return df
 

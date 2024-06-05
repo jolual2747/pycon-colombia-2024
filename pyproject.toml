@@ -36,6 +36,8 @@ fastapi = "^0.111.0"
 pydantic = "^2.7.1"
 uvicorn = "^0.29.0"
 starlette = "^0.37.2"
+seaborn = "^0.13.2"
+torchinfo = "^1.8.0"
 
 
 [build-system]

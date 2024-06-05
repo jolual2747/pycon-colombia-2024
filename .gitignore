@@ -12,9 +12,11 @@ data/unstructured/audiofolder
 *.zip
 /qdrant_storage
 products.csv
+products_embeddings.csv
 
 # models
 assets/embedding_model
+assets/embedding_model2
 
 # Distribution / packaging
 .Python

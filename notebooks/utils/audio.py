@@ -16,7 +16,7 @@ def create_kaggle_credentials() -> None:
 
     os.system("chmod 600 ~/.kaggle/kaggle.json")
 
-def download_kaggle_dataset(dataset_name: str) -> None:
+def download_kaggle_dataset() -> None:
     """Downloads a Kaggle dataset from Kaggle's website.
 
     Args:

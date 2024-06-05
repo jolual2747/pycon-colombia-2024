@@ -12,7 +12,7 @@ from utils import (
     get_products_data
 )
 
-collection = "products2"
+collection = "products3"
 
 hide_menu_style = """
     <style>
@@ -58,7 +58,7 @@ def main() -> None:
         inputs = processor(images=st.session_state.uploaded_img, return_tensors="pt")
         with torch.no_grad():
             outputs = model(**inputs)
-            embedding = outputs.pooler_output
+            embedding = outputs
         
         st.divider() 
 
