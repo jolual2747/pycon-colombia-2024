@@ -27,7 +27,7 @@ def main() -> None:
     """
     Main of the Streamlit app. 
     """
-    st.image("pyconco2024.png")
+    st.image("frontend/pyconco2024.png")
     st.markdown("# PyCon Colombia 2024 😎")
     st.markdown("### Non-official Chabot 🤖")
     st.write("Ask me anything about the event!")
@@ -55,7 +55,7 @@ def main() -> None:
                 full_text = ""
 
                 s = requests.Session()
-                with s.post("http://localhost:8000/chat_stream", stream=True, json={"text": prompt}) as r:
+                with s.post("http://api:8000/chat_stream", stream=True, json={"text": prompt}) as r:
                     for line in r.iter_content():
                         full_text += line.decode("latin-1").replace('`', '') 
                         if full_text.startswith('"'):
@@ -69,8 +69,6 @@ def main() -> None:
 
     # if st.session_state.text_input:
     #     st.button('Start again from new context', key='new_question_new_context')
-
-
 
 if __name__ == "__main__":
     main()

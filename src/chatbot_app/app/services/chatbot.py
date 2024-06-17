@@ -3,12 +3,12 @@ from typing import AsyncGenerator
 from langchain_openai.chat_models import ChatOpenAI
 from langchain_core.vectorstores import VectorStoreRetriever
 from langchain.tools.retriever import create_retriever_tool
-from langchain.chains.retrieval_qa.base import RetrievalQA
 from langchain.agents import AgentExecutor
 from langchain.agents import initialize_agent
 from langchain.memory import ConversationBufferWindowMemory
 from app.services._templates import template_customer_service
 from app.services.utils import AsyncCallbackHandler
+from langchain.agents.agent_types import AgentType
 
 class ChatBot:
     """Class ChatBot as a LangChain Agent."""
@@ -44,7 +44,7 @@ class ChatBot:
         tools = [tool]
 
         agent = initialize_agent(
-            agent='chat-conversational-react-description',
+            agent=AgentType.CHAT_CONVERSATIONAL_REACT_DESCRIPTION,
             tools=tools,
             llm=llm,
             verbose=True,

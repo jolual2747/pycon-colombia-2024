@@ -6,8 +6,7 @@ See all the info about the event, [clic here](https://2024.pycon.co/en)
 
 ## Embeddings is all you need: Artificial Intelligence for text, audio and images.
 
-Currently working on it! 
-🎯⚒️⚙️💡
+**Slides:** [clic here](https://drive.google.com/file/d/1lnVcq9eRwDYvicKRN0pVWfoHb-t6MYQ2/view)
 
 At their core, embeddings are a way to represent words, phrases, or even entire documents as vectors of real numbers in a continuous vector space. This representation captures the semantic meaning of the text, allowing similar words to have similar representations. Popular techniques to create embeddings include Word2Vec, GloVe (Global Vectors for Word Representation), and more recently, contextual embeddings like those from deep neural networks.
 
